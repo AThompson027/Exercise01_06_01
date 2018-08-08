@@ -15,7 +15,6 @@ var thirtyOne = document.createDocumentFragment();
 // function to remove select list defaults
 function removeSelectDefaults() {
     var emptyBoxes = document.getElementsByTagName("select");
-    alert("Select lists: " + emptyBoxes.length);
     for (var i = 0; i < emptyBoxes.length; i++) {
         emptyBoxes[i].selectedIndex = -1;
     }
@@ -23,7 +22,7 @@ function removeSelectDefaults() {
 
 // function to set up document fragments for day of the month
 function setUpDays() {
-    var dates = document.getElementById("delivDy").getElementsbyTagName("option");
+    var dates = document.getElementById("delivDy").getElementsByTagName("option");
     twentyNine.appendChild(dates[28].cloneNode(true));
     thirty.appendChild(dates[28].cloneNode(true));
     thirty.appendChild(dates[29].cloneNode(true));
@@ -65,6 +64,7 @@ function setUpPage() {
     removeSelectDefaults();
     setUpDays();
     createEventListeners();
+    updateDays();
 }
 
 // function to create our event listeners
@@ -75,13 +75,14 @@ function createEventListeners() {
     } else if (deliveryMonth.attachEvent) {
         deliveryMonth.attachEvent("onchange", updateDays);
     }
-}
-var deliveryYear = document.getElementById("delivYr");
+    var deliveryYear = document.getElementById("delivYr");
     if (deliveryYear.addEventListener) {
         deliveryYear.addEventListener("change", updateDays, false);
     } else if (deliveryYear.attachEvent) {
         deliveryYear.attachEvent("onchange", updateDays);
     }
+}
+
 
 // page load event handlers
 if (window.addEventListener) {
