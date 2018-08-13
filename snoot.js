@@ -97,42 +97,74 @@ function copyBillingAddress() {
 // function to validate address - billing and delivery
 function validateAddress(fieldsetId) {
     var inputElements = document.querySelectorAll("#" + fieldsetId + " input");
-    var errorDiv = document.querySelectorAll("#" + fieldsetId + ".errorMessage")[0];
+    var errorDiv = document.querySelectorAll("#" + fieldsetId + " .errorMessage")[0];
     var fieldsetValidity = true;
     var elementCount = inputElements.length;
     var currentElement;
+
     try {
-      alert("I am executing the try clause.");   
-    }
-    catch(msg) {
+        // loop through the input fields looking for blanks
+        for (var i = 0; i < elementCount; i++) {
+            currentElement = inputElements[i];
+            // blanks 
+            if (currentElement.value === "") {
+                currentElement.style.background = "rgb(255, 233, 233)";
+                fieldsetValidity = false;
+            }
+            // not blanks
+            else {
+                currentElement.style.background = "white";
+            }
+        }
+        
+        // validate select list field
+        currentElement = document.querySelectorAll("#" + fieldsetId + " select")[0];
+        if (currentElement.selectedIndex === -1) {
+            currentElement.style.border = "1px solid red";
+            fieldsetValidity = false;
+        } else {
+            currentElement.style.border = "";
+        }
+        // action for invalid fieldset
+        if (fieldsetValidity == false) {
+            if (fieldsetId === "billingAddress") {
+                throw "Please complete all Billing Address information."
+            } else {
+                throw "Please complete all Delivery Address information."
+            }
+        } else {
+            errorDiv.style.display = "none";
+            errorDiv.innerHTML = "";
+        }
+
+    } catch (msg) {
         errorDiv.style.display = "block";
         errorDiv.innerHTML = msg;
         formValidity = false;
-        }
+    }
 }
 
 // function to validate entire form
 function validateForm(evt) {
     // prevent form default behavior - submit
-    if(evt.preventDefault) {
+    if (evt.preventDefault) {
         evt.preventDefault();
     } else {
         evt.returnValue = false;
     }
     formValidity = true;
-    
+
     validateAddress("billingAddress");
     validateAddress("deliveryAddress");
-    
+
     if (formValidity === true) { // form is valid
         document.getElementById("errorText").innerHTML = "";
         document.getElementById("errorText").style.display = "none";
         document.getElementsByTagName("form")[0].submit();
-    }
-    else { // form is valid
+    } else { // form is valid
         document.getElementById("errorText").innerHTML = "Please fix the indicated problems and then resubmit your order.";
         document.getElementById("errorText").style.display = "block";
-        scroll(0,0);
+        scroll(0, 0);
     }
 }
 
@@ -166,7 +198,7 @@ function createEventListeners() {
     } else if (messageBox.attachEvent) {
         messageBox.attachEvent("onchange", autoCheckCustom);
     }
-    
+
     var same = document.getElementById("sameAddr");
     if (same.addEventListener) {
         same.addEventListener("change", copyBillingAddress, false);
