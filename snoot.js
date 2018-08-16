@@ -120,7 +120,7 @@ function validateAddress(fieldsetId) {
                 currentElement.style.background = "white";
             }
         }
-        
+
         // validate select list field
         currentElement = document.querySelectorAll("#" + fieldsetId + " select")[0];
         if (currentElement.selectedIndex === -1) {
@@ -170,10 +170,10 @@ function validateDeliveryDate() {
                 currentElement.style.border = "";
             }
         }
-        
+
         // action for invalid fieldset
         if (fieldsetValidity == false) {
-                throw "Please specify a Delivery Date."
+            throw "Please specify a Delivery Date."
         } else {
             errorDiv.style.display = "none";
             errorDiv.innerHTML = "";
@@ -183,11 +183,40 @@ function validateDeliveryDate() {
         errorDiv.style.display = "block";
         errorDiv.innerHTML = msg;
         formValidity = false;
+
     }
-    // function to validate payment
 }
+
+    // function to validate custom message
+    function validateMessage() {
+        var msgBox = document.getElementById("customText");
+        var errorDiv = document.querySelectorAll("#message" + " .errorMessage")[0];
+        var fieldsetValidity = true;
+
+        try {
+
+            if (document.getElementById("custom").checked && (msgBox.value === "" || msgBox.value === msgBox.placeholder)) {
+                throw "Please enter your Custom Message text.";
+            } else {
+                errorDiv.style.display = "none";
+                errorDiv.innerHTML = "";
+                msgBox.style.background = "white";
+            }
+        
+
+    } catch (msg) {
+        errorDiv.style.display = "block";
+        errorDiv.innerHTML = msg;
+        msgBox.style.background = "rgb(255,233,233)"
+        formValidity = false;
+    }
+}
+
+    // function to validate payment
+
+
 function validatePayment() {
-    var errorDiv = document.querySelectorAll("#deliveryDate" + " .errorMessage")[0];
+    var errorDiv = document.querySelectorAll("#paymentInfo" + " .errorMessage")[0];
     var fieldsetValidity = true;
     var ccNumElement = document.getElementById("ccNum");
     var selectElements = document.querySelectorAll("#paymentInfo" + " select");
@@ -195,27 +224,55 @@ function validatePayment() {
     var cvvElement = document.getElementById("cvv");
     var cards = document.getElementsByName("PaymentType");
     var currentElement;
-    
+
     // this is where we were yesterday
-    
+
     try {
-        // loop through the select fields looking for blanks
+        // validate radio buttons one must be on
+        if (!cards[0].checked && !cards[1].checked && !cards[2].checked && !cards[3].checked) {
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].style.outline = "1px solid red";
+            }
+            fieldsetValidity = false;
+        } else {
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].style.outline = "";
+
+            }
+        }
+        // validate required card number
+        if (ccNumElement.value === "") {
+            ccNumElement.style.background = "rgb(255, 233, 233)";
+            formValidity = false;
+        } else {
+            ccNumElement.style.background = "white";
+        }
+
         for (var i = 0; i < elementCount; i++) {
             currentElement = selectElements[i];
-            // blanks 
+            //blanks
             if (currentElement.selectedIndex === -1) {
                 currentElement.style.border = "1px solid red";
-                fieldsetValidity = false;
+                fieldsetValidity = false
             }
             // not blanks
             else {
                 currentElement.style.border = "";
             }
         }
-        
+
+        // validate required cvv number
+
+        if (cvvElement.value === "") {
+            cvvElement.style.background = "rgb(255, 233, 233)";
+            formValidity = false;
+        } else {
+            cvvElement.style.background = "white";
+        }
+
         // action for invalid fieldset
-        if (fieldsetValidity == false) {
-                throw "Please specify a Delivery Date."
+        if (fieldsetValidity === false) {
+            throw "Please complete all Payment info."
         } else {
             errorDiv.style.display = "none";
             errorDiv.innerHTML = "";
@@ -241,7 +298,9 @@ function validateForm(evt) {
     validateAddress("billingAddress");
     validateAddress("deliveryAddress");
     validateDeliveryDate();
-    
+    validatePayment();
+    validateMessage()
+
 
     if (formValidity === true) { // form is valid
         document.getElementById("errorText").innerHTML = "";
